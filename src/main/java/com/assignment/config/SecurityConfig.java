@@ -41,13 +41,45 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
+                // ==============================
+                // FRONTEND FILES
+                // ==============================
+
+                .requestMatchers(
+                    "/",
+                    "/index.html",
+                    "/student.html",
+                    "/staff.html",
+                    "/css/**",
+                    "/js/**"
+                )
+                .permitAll()
+
+
+                // ==============================
+                // AUTHENTICATION
+                // ==============================
+
                 .requestMatchers(
                     "/api/auth/register",
                     "/api/auth/login"
-                ).permitAll()
+                )
+                .permitAll()
 
-                .requestMatchers("/api/staff/**")
+
+                // ==============================
+                // STAFF APIs
+                // ==============================
+
+                .requestMatchers(
+                    "/api/staff/**"
+                )
                 .hasRole("STAFF")
+
+
+                // ==============================
+                // STUDENT APIs
+                // ==============================
 
                 .requestMatchers(
                     HttpMethod.POST,
@@ -61,9 +93,34 @@ public class SecurityConfig {
                 )
                 .hasRole("STUDENT")
 
+                .requestMatchers(
+                    HttpMethod.PUT,
+                    "/api/tickets/*/close"
+                )
+                .hasRole("STUDENT")
+
+
+                // ==============================
+                // OTHER TICKET APIs
+                // ==============================
+
+                .requestMatchers(
+                    "/api/tickets/**"
+                )
+                .authenticated()
+
+
+                // ==============================
+                // EVERYTHING ELSE
+                // ==============================
+
                 .anyRequest()
                 .authenticated()
             )
+
+            // ==============================
+            // JWT FILTER
+            // ==============================
 
             .addFilterBefore(
                 jwtAuthenticationFilter,
